@@ -34,10 +34,12 @@ class QuadOSCApp : public AppNative {
     std::string checkSum = "";
     
     //7E 00 35 00 01 00 7D 33 A2 00 40 C3 44 DA 00 3C 78 3E 30 2E 35 3C 2F 78 3E 3C 79 3E 30 2E 38 3C 2F 79 3E 3C 7A 3E 2D 30 2E 34 3C 2F 7A 3E 3C 77 3E 30 2E 30 3C 2F 77 3E 0A 58//
-    uint8_t outBuffer[58]{126,0,53,0,1,0,125,51,162,0,64,195,68,218,0,60,120,62,48,46,53,60,47,120,62,60,121,62,48,46,56,60,47,121,62,60,122,62,45,48,46,52,60,47,122,62,60,119,62,48,46,48,60,47,119,62,10,88};
+  //  uint8_t outBuffer[58]{126,0,53,0,1,0,125,51,162,0,64,195,68,218,0,60,120,62,48,46,53,60,47,120,62,60,121,62,48,46,56,60,47,121,62,60,122,62,45,48,46,52,60,47,122,62,60,119,62,48,46,48,60,47,119,62,10,88};
+    
+ //   uint8_t outBuffer[76]{126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
     //beginning of packet
-  //  uint8_t outBuffer[75] {126,0,75,0,1,0,125,51,162,0,64,195,68,218,0};
+    uint8_t outBuffer[76] {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0};
     
     double sinceLastRead, lastUpdate;
   // void updateBuffer(char* outBuffer, int length);
@@ -50,16 +52,16 @@ class QuadOSCApp : public AppNative {
 
 void QuadOSCApp::setup()
 {
-  /*  // <
+    // <
     outBuffer[15] = 60;
     // w
     outBuffer[16] = 119;
     // >
     outBuffer[17] = 62;
     // w debug placeholders 0.087465
-    outBuffer[18] = 60;
+    outBuffer[18] = 48;
     outBuffer[19] = 46;
-    outBuffer[20] = 60;
+    outBuffer[20] = 48;
     outBuffer[21] = 56;
     outBuffer[22] = 55;
     outBuffer[23] = 52;
@@ -82,9 +84,9 @@ void QuadOSCApp::setup()
     // >
     outBuffer[32] = 62;
     // x debug placeholders 0.087465
-    outBuffer[33] = 60;
+    outBuffer[33] = 48;
     outBuffer[34] = 46;
-    outBuffer[35] = 60;
+    outBuffer[35] = 48;
     outBuffer[36] = 56;
     outBuffer[37] = 55;
     outBuffer[38] = 52;
@@ -95,8 +97,8 @@ void QuadOSCApp::setup()
     outBuffer[41] = 60;
     // /
     outBuffer[42] = 47;
-    // w
-    outBuffer[43] = 119;
+    // x
+    outBuffer[43] = 120;
     // >
     outBuffer[44] = 62;
     
@@ -107,9 +109,9 @@ void QuadOSCApp::setup()
     // >
     outBuffer[47] = 62;
     // y debug placeholders 0.087465
-    outBuffer[48] = 60;
+    outBuffer[48] = 48;
     outBuffer[49] = 46;
-    outBuffer[50] = 60;
+    outBuffer[50] = 48;
     outBuffer[51] = 56;
     outBuffer[52] = 55;
     outBuffer[53] = 52;
@@ -120,21 +122,21 @@ void QuadOSCApp::setup()
     outBuffer[56] = 60;
     // /
     outBuffer[57] = 47;
-    // w
-    outBuffer[58] = 119;
+    // y
+    outBuffer[58] = 121;
     // >
     outBuffer[59] = 62;
     
     // <
     outBuffer[60] = 60;
     // z
-    outBuffer[61] = 120;
+    outBuffer[61] = 122;
     // >
     outBuffer[62] = 62;
     // z debug placeholders 0.087465
-    outBuffer[63] = 60;
+    outBuffer[63] = 48;
     outBuffer[64] = 46;
-    outBuffer[65] = 60;
+    outBuffer[65] = 48;
     outBuffer[66] = 56;
     outBuffer[67] = 55;
     outBuffer[68] = 52;
@@ -145,11 +147,19 @@ void QuadOSCApp::setup()
     outBuffer[71] = 60;
     // /
     outBuffer[72] = 47;
-    // w
-    outBuffer[73] = 119;
+    // z
+    outBuffer[73] = 122;
     // >
-    outBuffer[74] = 104; */
+    outBuffer[74] = 62;
+  
+  
+    //checksum
+    outBuffer[75] = 104;
     
+    for ( int i=0; i<76; i++ )
+    {
+        console() << hex << outBuffer[i] << " " ;
+    }
     
     
     mOscListener.setup(8001);
@@ -212,7 +222,7 @@ void QuadOSCApp::update()
             outData += "</t>";
         }
         
-        console() << outBuffer << std::endl;
+       // console() << outBuffer << std::endl;
         
         double now = getElapsedSeconds();
         double deltaTime = now - lastUpdate;
@@ -227,9 +237,8 @@ void QuadOSCApp::update()
             
             /* Serial data written here */
             
-            serial.writeBytes(outBuffer,58);
+            serial.writeBytes(outBuffer,76);
         }
-
     }
 }
 
