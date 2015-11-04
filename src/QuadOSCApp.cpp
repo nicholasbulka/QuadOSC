@@ -7,6 +7,8 @@
 #include "cinder/Text.h"
 #include <string>
 #include <boost/lexical_cast.hpp>
+#include <sstream>
+#include <math.h>
 
 
 using namespace ci;
@@ -29,134 +31,132 @@ class QuadOSCApp : public AppNative {
     
     Serial serial;
     
-    std::string apiHexA = "7E 00 35 00 01 00 7D 33 A2 00 40 C3 44 DA 00";
-    std::string apiHexB = "";
-    std::string checkSum = "";
+ //    uint8_t outBuffer[76] // API 2 {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
-    //7E 00 35 00 01 00 7D 33 A2 00 40 C3 44 DA 00 3C 78 3E 30 2E 35 3C 2F 78 3E 3C 79 3E 30 2E 38 3C 2F 79 3E 3C 7A 3E 2D 30 2E 34 3C 2F 7A 3E 3C 77 3E 30 2E 30 3C 2F 77 3E 0A 58//
-  //  uint8_t outBuffer[58]{126,0,53,0,1,0,125,51,162,0,64,195,68,218,0,60,120,62,48,46,53,60,47,120,62,60,121,62,48,46,56,60,47,121,62,60,122,62,45,48,46,52,60,47,122,62,60,119,62,48,46,48,60,47,119,62,10,88};
+ //   uint8_t outBuffer[75] // API 1 {126,0,71,0,1,0,19,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
- //   uint8_t outBuffer[76]{126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
+// packet 7E 00 47 00 01 00 13 A2 00 40 C3 44 DA 00 3C 77 3E 30 2E 30 38 37 34 36 35 3C 2F 77 3E 3C 78 3E 30 2E 30 38 37 34 36 35 3C 2F 78 3E 3C 79 3E 30 2E 30 38 37 34 36 35 3C 2F 79 3E 3C 7A 3E 30 2E 30 38 37 34 36 35 3C 2F 7A 3E 68
     
     //beginning of packet
-    uint8_t outBuffer[76] {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0};
+    uint8_t outBuffer[75] {126,0,71,0,1,0,19,162,0,64,195,68,218,0};
     
     double sinceLastRead, lastUpdate;
-  // void updateBuffer(char* outBuffer, int length);
-  //  int charToInt(char digit);
+
     std::string outData;
     std::string strToChars(std::string str, int motor);
-    int wDec[7], xDec[7], yDec[7], zDec[7];
+    uint8_t wDec[8], xDec[8], yDec[8], zDec[8];
+    
+    uint8_t checkSum(u_int8_t* buffer);
 
 };
 
 void QuadOSCApp::setup()
 {
     // <
-    outBuffer[15] = 60;
+    outBuffer[14] = 60;
     // w
-    outBuffer[16] = 119;
+    outBuffer[15] = 119;
     // >
-    outBuffer[17] = 62;
+    outBuffer[16] = 62;
     // w debug placeholders 0.087465
-    outBuffer[18] = 48;
-    outBuffer[19] = 46;
-    outBuffer[20] = 48;
-    outBuffer[21] = 56;
-    outBuffer[22] = 55;
-    outBuffer[23] = 52;
-    outBuffer[24] = 54;
-    outBuffer[25] = 53;
+    outBuffer[17] = 48;
+    outBuffer[18] = 46;
+    outBuffer[19] = 48;
+    outBuffer[20] = 56;
+    outBuffer[21] = 55;
+    outBuffer[22] = 52;
+    outBuffer[23] = 54;
+    outBuffer[24] = 53;
     
     // <
-    outBuffer[26] = 60;
+    outBuffer[25] = 60;
     // /
-    outBuffer[27] = 47;
+    outBuffer[26] = 47;
     // w
-    outBuffer[28] = 119;
+    outBuffer[27] = 119;
     // >
-    outBuffer[29] = 62;
+    outBuffer[28] = 62;
     
     // <
-    outBuffer[30] = 60;
+    outBuffer[29] = 60;
     // x
-    outBuffer[31] = 120;
+    outBuffer[30] = 120;
     // >
-    outBuffer[32] = 62;
+    outBuffer[31] = 62;
     // x debug placeholders 0.087465
-    outBuffer[33] = 48;
-    outBuffer[34] = 46;
-    outBuffer[35] = 48;
-    outBuffer[36] = 56;
-    outBuffer[37] = 55;
-    outBuffer[38] = 52;
-    outBuffer[39] = 54;
-    outBuffer[40] = 53;
+    outBuffer[32] = 48;
+    outBuffer[33] = 46;
+    outBuffer[34] = 48;
+    outBuffer[35] = 56;
+    outBuffer[36] = 55;
+    outBuffer[37] = 52;
+    outBuffer[38] = 54;
+    outBuffer[39] = 53;
     
     // <
-    outBuffer[41] = 60;
+    outBuffer[40] = 60;
     // /
-    outBuffer[42] = 47;
+    outBuffer[41] = 47;
     // x
-    outBuffer[43] = 120;
+    outBuffer[42] = 120;
     // >
-    outBuffer[44] = 62;
+    outBuffer[43] = 62;
     
     // <
-    outBuffer[45] = 60;
+    outBuffer[44] = 60;
     // y
-    outBuffer[46] = 121;
+    outBuffer[45] = 121;
     // >
-    outBuffer[47] = 62;
+    outBuffer[46] = 62;
     // y debug placeholders 0.087465
-    outBuffer[48] = 48;
-    outBuffer[49] = 46;
-    outBuffer[50] = 48;
-    outBuffer[51] = 56;
-    outBuffer[52] = 55;
-    outBuffer[53] = 52;
-    outBuffer[54] = 54;
-    outBuffer[55] = 53;
+    outBuffer[47] = 48;
+    outBuffer[48] = 46;
+    outBuffer[49] = 48;
+    outBuffer[50] = 56;
+    outBuffer[51] = 55;
+    outBuffer[52] = 52;
+    outBuffer[53] = 54;
+    outBuffer[54] = 53;
     
     // <
-    outBuffer[56] = 60;
+    outBuffer[55] = 60;
     // /
-    outBuffer[57] = 47;
+    outBuffer[56] = 47;
     // y
-    outBuffer[58] = 121;
+    outBuffer[57] = 121;
     // >
-    outBuffer[59] = 62;
+    outBuffer[58] = 62;
     
     // <
-    outBuffer[60] = 60;
+    outBuffer[59] = 60;
     // z
-    outBuffer[61] = 122;
+    outBuffer[60] = 122;
     // >
-    outBuffer[62] = 62;
+    outBuffer[61] = 62;
     // z debug placeholders 0.087465
-    outBuffer[63] = 48;
-    outBuffer[64] = 46;
-    outBuffer[65] = 48;
-    outBuffer[66] = 56;
-    outBuffer[67] = 55;
-    outBuffer[68] = 52;
-    outBuffer[69] = 54;
-    outBuffer[70] = 53;
+    outBuffer[62] = 48;
+    outBuffer[63] = 46;
+    outBuffer[64] = 48;
+    outBuffer[65] = 56;
+    outBuffer[66] = 55;
+    outBuffer[67] = 52;
+    outBuffer[68] = 54;
+    outBuffer[69] = 53;
     
     // <
-    outBuffer[71] = 60;
+    outBuffer[70] = 60;
     // /
-    outBuffer[72] = 47;
+    outBuffer[71] = 47;
     // z
-    outBuffer[73] = 122;
+    outBuffer[72] = 122;
     // >
-    outBuffer[74] = 62;
+    outBuffer[73] = 62;
   
   
     //checksum
-    outBuffer[75] = 104;
+    outBuffer[74] = 104;
     
-    for ( int i=0; i<76; i++ )
+    for ( int i=0; i<75; i++ )
     {
         console() << hex << outBuffer[i] << " " ;
     }
@@ -206,14 +206,18 @@ void QuadOSCApp::update()
             QuadOSCApp::strToChars(yStr, 3);
             QuadOSCApp::strToChars(zStr, 4);
             
-            outData = "<w>" + boost::lexical_cast<std::string>(wDec);
-            outData += "</w><x>" + boost::lexical_cast<std::string>(xDec);
-
-            outData += "</x><y>" + boost::lexical_cast<std::string>(yDec);
-
-            outData += "<y><z>"  + boost::lexical_cast<std::string>(zDec);
-
-            outData += "</z>";
+            // w debug placeholders 0.087465
+            outBuffer[18] = wDec[0];
+            outBuffer[19] = wDec[1];
+            outBuffer[20] = wDec[2];
+            outBuffer[21] = wDec[3];
+            outBuffer[22] = wDec[4];
+            outBuffer[23] = wDec[5];
+            outBuffer[24] = wDec[6];
+            outBuffer[25] = wDec[7];
+           
+            //checksum
+            outBuffer[74] = QuadOSCApp::checkSum(outBuffer);
         }
         
         if(msg.getNumArgs() == 1)
@@ -222,7 +226,7 @@ void QuadOSCApp::update()
             outData += "</t>";
         }
         
-       // console() << outBuffer << std::endl;
+        console() << hex << outBuffer[75] << std::endl;
         
         double now = getElapsedSeconds();
         double deltaTime = now - lastUpdate;
@@ -251,9 +255,9 @@ void QuadOSCApp::draw()
 
 std::string QuadOSCApp::strToChars(string str, int motor)
 {
+    int count = 0;
     for (std::string::iterator it=str.begin(); it!=str.end(); ++it)
     {
-        int count = 0;
         switch ( motor )
         {
             case 1:
@@ -274,6 +278,26 @@ std::string QuadOSCApp::strToChars(string str, int motor)
         ++count;
     }
     return str;
+}
+
+u_int8_t QuadOSCApp::checkSum(u_int8_t* buffer)
+{
+    unsigned long sum = 0;
+    console() << "sum 1: " << sum << endl;
+    for ( int i=3; i<74; i++ ) //all bytes in packet except XBee API frame delimiter & size = final checkSum byte
+    {
+        //console() << hex << outBuffer[i] << " " ;
+        unsigned long number = outBuffer[i];
+        sum = (sum + number);
+        console() << "sum loop: " << sum << endl;
+    }
+    
+
+    sum = 0xff - (sum % 256);
+    
+    console() << sum << endl;
+    
+    return sum  ;
 }
 
 CINDER_APP_NATIVE( QuadOSCApp, RendererGl )
