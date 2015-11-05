@@ -31,14 +31,14 @@ class QuadOSCApp : public AppNative {
     
     Serial serial;
     
- //    uint8_t outBuffer[76] // API 2 {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
+  //   uint8_t outBuffer[76] // API 2 {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
  //   uint8_t outBuffer[75] // API 1 {126,0,71,0,1,0,19,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
 // packet 7E 00 47 00 01 00 13 A2 00 40 C3 44 DA 00 3C 77 3E 30 2E 30 38 37 34 36 35 3C 2F 77 3E 3C 78 3E 30 2E 30 38 37 34 36 35 3C 2F 78 3E 3C 79 3E 30 2E 30 38 37 34 36 35 3C 2F 79 3E 3C 7A 3E 30 2E 30 38 37 34 36 35 3C 2F 7A 3E 68
     
     //beginning of packet
-    uint8_t outBuffer[75] {126,0,71,0,1,0,19,162,0,64,195,68,218,0};
+    uint8_t outBuffer[76] {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0};
     
     double sinceLastRead, lastUpdate;
 
@@ -53,110 +53,110 @@ class QuadOSCApp : public AppNative {
 void QuadOSCApp::setup()
 {
     // <
-    outBuffer[14] = 60;
+    outBuffer[15] = 60;
     // w
-    outBuffer[15] = 119;
+    outBuffer[16] = 119;
     // >
-    outBuffer[16] = 62;
+    outBuffer[17] = 62;
     // w debug placeholders 0.087465
-    outBuffer[17] = 48;
-    outBuffer[18] = 46;
-    outBuffer[19] = 48;
-    outBuffer[20] = 56;
-    outBuffer[21] = 55;
-    outBuffer[22] = 52;
-    outBuffer[23] = 54;
-    outBuffer[24] = 53;
+    outBuffer[18] = 48;
+    outBuffer[19] = 46;
+    outBuffer[20] = 48;
+    outBuffer[21] = 56;
+    outBuffer[22] = 55;
+    outBuffer[23] = 52;
+    outBuffer[24] = 54;
+    outBuffer[25] = 53;
     
     // <
-    outBuffer[25] = 60;
+    outBuffer[26] = 60;
     // /
-    outBuffer[26] = 47;
+    outBuffer[27] = 47;
     // w
-    outBuffer[27] = 119;
+    outBuffer[28] = 119;
     // >
-    outBuffer[28] = 62;
+    outBuffer[29] = 62;
     
     // <
-    outBuffer[29] = 60;
+    outBuffer[30] = 60;
     // x
-    outBuffer[30] = 120;
+    outBuffer[31] = 120;
     // >
-    outBuffer[31] = 62;
+    outBuffer[32] = 62;
     // x debug placeholders 0.087465
-    outBuffer[32] = 48;
-    outBuffer[33] = 46;
-    outBuffer[34] = 48;
-    outBuffer[35] = 56;
-    outBuffer[36] = 55;
-    outBuffer[37] = 52;
-    outBuffer[38] = 54;
-    outBuffer[39] = 53;
+    outBuffer[33] = 48;
+    outBuffer[34] = 46;
+    outBuffer[35] = 48;
+    outBuffer[36] = 56;
+    outBuffer[37] = 55;
+    outBuffer[38] = 52;
+    outBuffer[39] = 54;
+    outBuffer[40] = 53;
     
     // <
-    outBuffer[40] = 60;
+    outBuffer[41] = 60;
     // /
-    outBuffer[41] = 47;
+    outBuffer[42] = 47;
     // x
-    outBuffer[42] = 120;
+    outBuffer[43] = 120;
     // >
-    outBuffer[43] = 62;
+    outBuffer[44] = 62;
     
     // <
-    outBuffer[44] = 60;
+    outBuffer[45] = 60;
     // y
-    outBuffer[45] = 121;
+    outBuffer[46] = 121;
     // >
-    outBuffer[46] = 62;
+    outBuffer[47] = 62;
     // y debug placeholders 0.087465
-    outBuffer[47] = 48;
-    outBuffer[48] = 46;
-    outBuffer[49] = 48;
-    outBuffer[50] = 56;
-    outBuffer[51] = 55;
-    outBuffer[52] = 52;
-    outBuffer[53] = 54;
-    outBuffer[54] = 53;
+    outBuffer[48] = 48;
+    outBuffer[49] = 46;
+    outBuffer[50] = 48;
+    outBuffer[51] = 56;
+    outBuffer[52] = 55;
+    outBuffer[53] = 52;
+    outBuffer[54] = 54;
+    outBuffer[55] = 53;
     
     // <
-    outBuffer[55] = 60;
+    outBuffer[56] = 60;
     // /
-    outBuffer[56] = 47;
+    outBuffer[57] = 47;
     // y
-    outBuffer[57] = 121;
+    outBuffer[58] = 121;
     // >
-    outBuffer[58] = 62;
+    outBuffer[59] = 62;
     
     // <
-    outBuffer[59] = 60;
+    outBuffer[60] = 60;
     // z
-    outBuffer[60] = 122;
+    outBuffer[61] = 122;
     // >
-    outBuffer[61] = 62;
+    outBuffer[62] = 62;
     // z debug placeholders 0.087465
-    outBuffer[62] = 48;
-    outBuffer[63] = 46;
-    outBuffer[64] = 48;
-    outBuffer[65] = 56;
-    outBuffer[66] = 55;
-    outBuffer[67] = 52;
-    outBuffer[68] = 54;
-    outBuffer[69] = 53;
+    outBuffer[63] = 48;
+    outBuffer[64] = 46;
+    outBuffer[65] = 48;
+    outBuffer[66] = 56;
+    outBuffer[67] = 55;
+    outBuffer[68] = 52;
+    outBuffer[69] = 54;
+    outBuffer[70] = 53;
     
     // <
-    outBuffer[70] = 60;
+    outBuffer[71] = 60;
     // /
-    outBuffer[71] = 47;
+    outBuffer[72] = 47;
     // z
-    outBuffer[72] = 122;
+    outBuffer[73] = 122;
     // >
-    outBuffer[73] = 62;
+    outBuffer[74] = 62;
   
   
     //checksum
-    outBuffer[74] = 104;
+    outBuffer[75] = 104;
     
-    for ( int i=0; i<75; i++ )
+    for ( int i=0; i<76; i++ )
     {
         console() << hex << outBuffer[i] << " " ;
     }
@@ -217,7 +217,7 @@ void QuadOSCApp::update()
             outBuffer[25] = wDec[7];
            
             //checksum
-            outBuffer[74] = QuadOSCApp::checkSum(outBuffer);
+            outBuffer[75] = QuadOSCApp::checkSum(outBuffer);
         }
         
         if(msg.getNumArgs() == 1)
@@ -284,7 +284,7 @@ u_int8_t QuadOSCApp::checkSum(u_int8_t* buffer)
 {
     unsigned long sum = 0;
     console() << "sum 1: " << sum << endl;
-    for ( int i=3; i<74; i++ ) //all bytes in packet except XBee API frame delimiter & size = final checkSum byte
+    for ( int i=3; i<75; i++ ) //all bytes in packet except XBee API frame delimiter & size = final checkSum byte
     {
         //console() << hex << outBuffer[i] << " " ;
         unsigned long number = outBuffer[i];
@@ -293,11 +293,11 @@ u_int8_t QuadOSCApp::checkSum(u_int8_t* buffer)
     }
     
 
-    sum = 0xff - (sum % 256);
+    sum = 0xff - ((sum - 0x9d) % 256);
     
     console() << sum << endl;
     
-    return sum  ;
+    return sum;
 }
 
 CINDER_APP_NATIVE( QuadOSCApp, RendererGl )
