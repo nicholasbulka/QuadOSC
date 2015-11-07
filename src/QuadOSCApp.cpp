@@ -31,11 +31,10 @@ class QuadOSCApp : public AppNative {
     
     Serial serial;
     
-     uint8_t outBuffer[76] {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
+     uint8_t outBuffer[61] {126,0,56,0,1,0,125,51,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62, 27};
     
- //   uint8_t outBuffer[75] // API 1 {126,0,71,0,1,0,19,162,0,64,195,68,218,0,60,119,62,48,46,48,56,55,52,54,53,60,47,119,62,60,120,62,48,46,48,56,55,52,54,53,60,47,120,62,60,121,62,48,46,48,56,55,52,54,53,60,47,121,62,60,122,62,48,46,48,56,55,52,54,53,60,47,122,62,104};
     
-// packet 7E 00 47 00 01 00 13 A2 00 40 C3 44 DA 00 3C 77 3E 30 2E 30 38 37 34 36 35 3C 2F 77 3E 3C 78 3E 30 2E 30 38 37 34 36 35 3C 2F 78 3E 3C 79 3E 30 2E 30 38 37 34 36 35 3C 2F 79 3E 3C 7A 3E 30 2E 30 38 37 34 36 35 3C 2F 7A 3E 68
+// packet 7E 00 47 00 01 00 7D 33 A2 00 40 C3 44 DA 00 3C 77 3E 30 2E 30 38 37 34 36 35 3C 2F 77 3E 3C 78 3E 30 2E 30 38 37 34 36 35 3C 2F 78 3E 3C 79 3E 30 2E 30 38 37 34 36 35 3C 2F 79 3E 1B
     
     //beginning of packet
    // uint8_t outBuffer[76] {126,0,71,0,1,0,125,51,162,0,64,195,68,218,0};
@@ -44,7 +43,7 @@ class QuadOSCApp : public AppNative {
 
     std::string outData;
     std::string strToChars(std::string str, int motor);
-    uint8_t wDec[8], xDec[8], yDec[8], zDec[8];
+    uint8_t wDec[8], xDec[8], yDec[8];
     uint8_t checkSum(u_int8_t* buffer);
 
 };
@@ -78,17 +77,15 @@ void QuadOSCApp::update()
         osc::Message msg;
         mOscListener.getNextMessage(&msg);
 
-        if (msg.getNumArgs() == 3)
+        if (msg.getNumArgs() == 5)
         {
             std::string wStr (msg.getArgAsString(0, TRUE));
-            std::string xStr (msg.getArgAsString(0, TRUE));
-            std::string yStr (msg.getArgAsString(1, TRUE));
-            std::string zStr (msg.getArgAsString(2, TRUE));
+            std::string xStr (msg.getArgAsString(1, TRUE));
+            std::string yStr (msg.getArgAsString(2, TRUE));
             
             QuadOSCApp::strToChars(wStr, 1);
             QuadOSCApp::strToChars(xStr, 2);
             QuadOSCApp::strToChars(yStr, 3);
-            QuadOSCApp::strToChars(zStr, 4);
             
             // override debug placeholders 0.087465 with osc data
             outBuffer[18] = wDec[0];
@@ -117,27 +114,48 @@ void QuadOSCApp::update()
             outBuffer[53] = yDec[5];
             outBuffer[54] = yDec[6];
             outBuffer[55] = yDec[7];
-            
-            outBuffer[63] = xDec[0];
-            outBuffer[64] = xDec[1];
-            outBuffer[65] = xDec[2];
-            outBuffer[66] = xDec[3];
-            outBuffer[67] = xDec[4];
-            outBuffer[68] = xDec[5];
-            outBuffer[69] = xDec[6];
-            outBuffer[70] = xDec[7];
            
             //checksum
-            outBuffer[75] = QuadOSCApp::checkSum(outBuffer);
+            outBuffer[60] = QuadOSCApp::checkSum(outBuffer);
         }
         
         if(msg.getNumArgs() == 1)
         {
-            outData = "<t>" + msg.getArgAsString(0, TRUE);
-            outData += "</t>";
+            std::string wStr (msg.getArgAsString(0, TRUE));
+            QuadOSCApp::strToChars(wStr, 1);
+            
+            outBuffer[18] = wDec[0];
+            outBuffer[19] = wDec[1];
+            outBuffer[20] = wDec[2];
+            outBuffer[21] = wDec[3];
+            outBuffer[22] = wDec[4];
+            outBuffer[23] = wDec[5];
+            outBuffer[24] = wDec[6];
+            outBuffer[25] = wDec[7];
+            
+            outBuffer[33] = wDec[0];
+            outBuffer[34] = wDec[1];
+            outBuffer[35] = wDec[2];
+            outBuffer[36] = wDec[3];
+            outBuffer[37] = wDec[4];
+            outBuffer[38] = wDec[5];
+            outBuffer[39] = wDec[6];
+            outBuffer[40] = wDec[7];
+            
+            outBuffer[48] = wDec[0];
+            outBuffer[49] = wDec[1];
+            outBuffer[50] = wDec[2];
+            outBuffer[51] = wDec[3];
+            outBuffer[52] = wDec[4];
+            outBuffer[53] = wDec[5];
+            outBuffer[54] = wDec[6];
+            outBuffer[55] = wDec[7];
+            
+            //checksum
+            outBuffer[60] = QuadOSCApp::checkSum(outBuffer);
         }
         
-        console() << hex << outBuffer[75] << std::endl;
+        console() << hex << outBuffer[60] << std::endl;
         
         double now = getElapsedSeconds();
         double deltaTime = now - lastUpdate;
@@ -152,7 +170,7 @@ void QuadOSCApp::update()
             
             /* Serial data written here */
             
-            serial.writeBytes(outBuffer,76);
+            serial.writeBytes(outBuffer,61);
         }
     }
 }
@@ -180,9 +198,6 @@ std::string QuadOSCApp::strToChars(string str, int motor)
             case 3:
                 yDec[count] = *it;
                 break;
-            case 4:
-                zDec[count] = *it;
-                break;
             default:
                 console() << "no case registered";
         }
@@ -194,12 +209,11 @@ std::string QuadOSCApp::strToChars(string str, int motor)
 u_int8_t QuadOSCApp::checkSum(u_int8_t* buffer)
 {
     unsigned long sum = 0;
-    for ( int i=3; i<75; i++ ) //all bytes in packet except XBee API frame delimiter & size = final checkSum byte
+    for ( int i=3; i<60; i++ ) //all bytes in packet except XBee API frame delimiter & size = final checkSum byte
     {
         unsigned long number = outBuffer[i];
         sum = (sum + number);
     }
-    
 
     sum = 0xff - ((sum - 0x9d) % 256);
     
