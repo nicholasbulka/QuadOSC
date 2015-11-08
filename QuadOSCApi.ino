@@ -21,24 +21,24 @@
 #include <XBee.h>
 #include <SoftwareSerial.h>
 
-/*
-This example is for Series 1 XBee (802.15.4)
-Receives either a RX16 or RX64 packet and sets a PWM value based on packet data.
-Error led is flashed if an unexpected packet is received
-*/
 SoftwareSerial XSerial(2, 3); //RX, TX
 XBee xbee = XBee();
 XBeeResponse response = XBeeResponse();
-// create reusable response objects for responses we expect to handle 
+
 Rx16Response rx16 = Rx16Response();
 Rx64Response rx64 = Rx64Response();
 
-int statusLed = 9;
 int errorLed = 12;
-int dataLed = 11;
+int dataLed_1 = 11;
+int dataLed_2 = 9;
+int dataLed_3 = 5;
 
 uint8_t option = 0;
-uint8_t data = 0;
+uint8_t data1 = 0;
+uint8_t data2 = 0;
+uint8_t data3 = 0;
+
+String stringW, stringX, stringY;
 
 void flashLed(int pin, int times, int wait) {
     
@@ -54,22 +54,27 @@ void flashLed(int pin, int times, int wait) {
 }
 
 void setup() {
-  pinMode(statusLed, OUTPUT);
+//  pinMode(statusLed, OUTPUT);
   pinMode(errorLed, OUTPUT);
-  pinMode(dataLed,  OUTPUT);
+  pinMode(dataLed_1,  OUTPUT);
+  pinMode(dataLed_2,  OUTPUT);
+  pinMode(dataLed_3,  OUTPUT);
   
   // start serial
   XSerial.begin(9600);
   Serial.begin(9600);
   xbee.setSerial(XSerial);
   
-  flashLed(statusLed, 3, 50);
+  flashLed(errorLed, 3, 50);
 }
 
 // continuously reads packets, looking for RX16 or RX64
 void loop() {
     
     xbee.readPacket();
+    stringW = String("");
+    stringX = String("");
+    stringY = String("");
     
     if (xbee.getResponse().isAvailable()) {
       // got something
@@ -79,70 +84,52 @@ void loop() {
         
         if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
                 xbee.getResponse().getRx16Response(rx16);
+                option = rx16.getOption();
                 
-                data = rx16.getData(3);
-                Serial.println(data);
-                data = rx16.getData(4);
-                Serial.println(data);
-                data = rx16.getData(5);
-                Serial.println(data);
-                data = rx16.getData(6);
-                Serial.println(data);
-                data = rx16.getData(7);
-                Serial.println(data);
-                data = rx16.getData(8);
-                Serial.println(data);
-                data = rx16.getData(9);
-                Serial.println(data);
-                data = rx16.getData(10);
-                Serial.println(data);
-        	option = rx16.getOption();
-        	data = rx16.getData(18);
-                Serial.println(data);
-                data = rx16.getData(19);
-                Serial.println(data);
-                data = rx16.getData(20);
-                Serial.println(data);
-                data = rx16.getData(21);
-                Serial.println(data);
-                data = rx16.getData(22);
-                Serial.println(data);
-                data = rx16.getData(23);
-                Serial.println(data);
-                data = rx16.getData(24);
-                Serial.println(data);
-                data = rx16.getData(25);
-                Serial.println(data);
-                data = rx16.getData(33);
-                Serial.println(data);
-                data = rx16.getData(34);
-                Serial.println(data);
-                data = rx16.getData(35);
-                Serial.println(data);
-                data = rx16.getData(36);
-                Serial.println(data);
-                data = rx16.getData(37);
-                Serial.println(data);
-                data = rx16.getData(38);
-                Serial.println(data);
-                data = rx16.getData(39);
-                Serial.println(data);
-                data = rx16.getData(40);
-                Serial.println(data);
-               
+                stringW += char(rx16.getData(3));
+                stringW += char(rx16.getData(4));
+                stringW += char(rx16.getData(5));
+                stringW += char(rx16.getData(6));
+                stringW += char(rx16.getData(7));
+                stringW += char(rx16.getData(8));
+                stringW += char(rx16.getData(9));
+                stringW += char(rx16.getData(10));
+                data1 = map(stringW.toFloat() * 10000, -10000, 10000, 0, 255);
+                analogWrite(dataLed_1, data1);
+                Serial.println("W : ");
+                Serial.println(data1);
+                
+                stringX += char(rx16.getData(18));
+                stringX += char(rx16.getData(19));
+                stringX += char(rx16.getData(20));
+                stringX += char(rx16.getData(21));
+                stringX += char(rx16.getData(22));
+                stringX += char(rx16.getData(23));
+                stringX += char(rx16.getData(24));
+                stringX += char(rx16.getData(25));
+                data2 = map(stringX.toFloat() * 10000, -10000, 10000, 0, 255);
+                analogWrite(dataLed_2, data2);
+                Serial.println("X : ");
+                Serial.println(data2);
+        	
+                stringY += char(rx16.getData(33));
+                stringY += char(rx16.getData(34));
+                stringY += char(rx16.getData(35));
+                stringY += char(rx16.getData(36));
+                stringY += char(rx16.getData(37));
+                stringY += char(rx16.getData(38));
+                stringY += char(rx16.getData(39));
+                stringY += char(rx16.getData(40));
+                data3 = map(stringY.toFloat() * 10000, -10000, 10000, 0, 255);
+                analogWrite(dataLed_3, data3); 
+                Serial.println("Y : ");
+                Serial.println(data3);
+                
         } else {
                 xbee.getResponse().getRx64Response(rx64);
         	option = rx64.getOption();
-        	data = rx64.getData(4);
-                data = map(data, -1, 1, 0, 255);
-                Serial.println("64");
+                
         }
-        
-        // TODO check option, rssi bytes    
-        flashLed(statusLed, 1, 10);
-        
-        // set dataLed PWM to value of the first byte in the data
-        analogWrite(dataLed, data);
       } else {
       	// not something we were expecting
         flashLed(errorLed, 1, 25);    
