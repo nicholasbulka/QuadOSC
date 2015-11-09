@@ -28,10 +28,10 @@ XBeeResponse response = XBeeResponse();
 Rx16Response rx16 = Rx16Response();
 Rx64Response rx64 = Rx64Response();
 
-int errorLed = 12;
-int dataLed_1 = 11;
+int dataLed_1 = 5;
 int dataLed_2 = 9;
-int dataLed_3 = 5;
+int dataLed_3 = 11;
+int errorLed = 12;
 
 uint8_t option = 0;
 uint8_t data1 = 0;
@@ -132,7 +132,7 @@ void loop() {
         }
       } else {
       	// not something we were expecting
-        flashLed(errorLed, 1, 25);    
+        flashLed(errorLed, 1, 25);
       }
     } else if (xbee.getResponse().isError()) {
       //nss.print("Error reading packet.  Error code: ");  
